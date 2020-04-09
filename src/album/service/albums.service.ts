@@ -5,15 +5,32 @@ import { Model } from 'mongoose';
 import { CreateAlbumDto } from '../dto/create-album.dto';
 import { Observable } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
+import { ArtistsService } from './artists.service';
+import { flatMap, map, mergeMap } from 'rxjs/operators';
+
 
 @Injectable()
 export class AlbumsService {
 
-  constructor(@InjectModel('album') private albumModel: Model<Album>) {
+  constructor(@InjectModel('album') private albumModel: Model<Album>,
+              private artistService: ArtistsService) {
   }
 
-  getAlbums(): Observable<Album[]> {
-    return fromPromise(this.albumModel.find());
+  getAlbums(): Observable<any> {
+    return fromPromise(this.albumModel.find())
+      .pipe(
+        flatMap((album) => album),
+        mergeMap((album) => {
+            return this.artistService.getArtist$(album.artistId)
+              .pipe(
+                map((artistDetail) => {
+                  // albumList.push(album);
+                  return { album, artist: artistDetail };
+                }),
+              );
+          },
+        ),
+      );
   }
 
   getAlbum(id: string): Observable<Album> {

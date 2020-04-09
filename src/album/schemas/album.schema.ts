@@ -4,5 +4,6 @@ export const AlbumSchema = new Schema({
   releaseDate: String,
   rating: Number,
   title: String,
-  Year: String
+  Year: String,
+  artistId: String
 });

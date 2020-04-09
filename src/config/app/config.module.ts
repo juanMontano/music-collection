@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import configuration from './configuration';
+import configuration from './app.config';
 import { AppConfigService } from './config.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as Joi from '@hapi/joi';
 
 /**
  * Import and provide app configuration related classes.
@@ -13,14 +12,7 @@ import * as Joi from '@hapi/joi';
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
-      validationSchema: Joi.object({
-        APP_NAME: Joi.string().default('MyApp'),
-        APP_ENV: Joi.string()
-          .valid('development', 'production', 'test', 'provision')
-          .default('development'),
-        HOST: Joi.string().default('http://my-app.test'),
-        APP_PORT: Joi.number().default(9000),
-      }),
+      envFilePath: './src/config/app.env'
     }),
   ],
   providers: [ConfigService, AppConfigService],

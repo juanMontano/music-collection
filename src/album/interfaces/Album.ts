@@ -6,4 +6,5 @@ export interface Album extends Document {
   rating: number,
   title: string,
   Year: string
+  artistId: string
 }
